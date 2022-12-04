@@ -13,7 +13,7 @@ describe("acss", () => {
           fontSize: "14px"
         }
       }).toString()
-    ).toEqual(["color-red", "font-size-12px"])
+    ).toEqual([".color-red", ".font-size-12px"])
   })
 
   it("style-insert", async () => {

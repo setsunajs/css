@@ -13,7 +13,7 @@ export function acss(...props: CSSObject[]) {
       const value: string = styles[key]
       if (!isString(value)) return
 
-      const sKey = humpToTransverse(key.trim()) + "-" + value
+      const sKey = "." + humpToTransverse(key.trim()) + "-" + value
       children.push({
         className: sKey,
         sKey,

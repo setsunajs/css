@@ -17,9 +17,20 @@
   "license": "MIT",
   "author": "@顾弦笙/usagisah <1286791152@qq.com>",
   "type": "module",
-  "main": "index.js",
+  "main": "lib/main.js",
+  "types": "lib/main.d.ts",
+  "exports": {
+    ".": {
+      "default": "./lib/main.js",
+      "types": "./lib/main.d.ts"
+    },
+    "./lib/vue": {
+      "default": "./lib/vue/index.js",
+      "types": "./lib/vue/index.d.ts"
+    }
+  },
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "build": "node ./scripts/build.js",

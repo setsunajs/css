@@ -26,7 +26,7 @@ function setStyle({ factory, el, preClassNames, value }: Options) {
 
   classNames.forEach(css => {
     if (!el.classList.contains(css)) {
-      el.classList.add(css)
+      el.classList.add(css.slice(1))
     }
 
     const index = preClassNames.indexOf(css)

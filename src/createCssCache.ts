@@ -64,7 +64,7 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
         if (type === 1) {
           if (atomMap.has(sKey!)) return
 
-          atomStyleContent += `.${sKey}{${key!}:${value};}`
+          atomStyleContent += `${sKey}{${key!}:${value};}`
           atomMap.set(sKey!, { key: key!, value: value! })
           return
         }
@@ -103,5 +103,6 @@ function createStyle(content: string) {
 }
 
 export function resolveCache() {
+  if (!cache) createCache()
   return cache!
 }
