@@ -1,0 +1,47 @@
+{
+  "name": "@setsunajs/css",
+  "version": "0.1.0",
+  "description": "Provide a joint solution of \"atom css\" and \"css in js\"",
+  "keywords": [
+    "@setsunajs",
+    "@setsunajs/css"
+  ],
+  "homepage": "https://github.com/usagisah/css#readme",
+  "bugs": {
+    "url": "https://github.com/usagisah/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/setsunajs/css.git"
+  },
+  "license": "MIT",
+  "author": "@顾弦笙/usagisah <1286791152@qq.com>",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ./scripts/build.js",
+    "coverage": "vitest run --coverage",
+    "dev": "vitest dev",
+    "format": "prettier -w src/**/*.ts",
+    "release": "node ./scripts/release.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@emotion/hash": "^0.9.0",
+    "@setsunajs/shared": "^0.2.0",
+    "stylis": "^4.1.3",
+    "typescript": "^4.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.10",
+    "esbuild": "^0.15.17",
+    "jsdom": "^20.0.3",
+    "prettier": "^2.8.0",
+    "prettier-config-usagisah": "^1.0.1",
+    "vite": "^3.2.4",
+    "vitest": "^0.25.3"
+  }
+}
