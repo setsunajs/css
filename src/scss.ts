@@ -6,8 +6,9 @@ import { COMMENT, compile, DECLARATION, RULESET } from "stylis"
 
 export type SCSSObject = {
   __setsuna_css_: true
-  className: () => string
-  toString: () => string
+  toString: () => string[]
+  toStyleString: () => string[]
+  toSelfString: () => string
   insert: () => void
 }
 
@@ -28,8 +29,9 @@ export function scss(...props: Array<CSSObject | SCSSObject>): SCSSObject {
   )
   return {
     __setsuna_css_: true,
-    className: () => className,
-    toString: () => styleStr,
+    toString: () => children.map(item => item.slice(0, item.indexOf("{"))),
+    toStyleString: () => children,
+    toSelfString: () => `${className}{${selfStr}}`,
     insert: () => {
       const cache = resolveCache()
       children.forEach(value => cache.insert(2, { value }))
@@ -43,7 +45,7 @@ function flatStyle(style: CSSObject | SCSSObject) {
   }
 
   if ("__setsuna_css_" in style) {
-    return [(style as SCSSObject).toString(), ""]
+    return [(style as SCSSObject).toSelfString(), ""]
   }
 
   let str = ""
@@ -72,7 +74,7 @@ function serialize(children: any, callback: any) {
   return output
 }
 
-function stringify(element: any, children: any, callback: any) {
+function stringify(element: any, index: any, children: any, callback: any) {
   if (element.type === COMMENT) {
     return ""
   } else if (element.type === DECLARATION) {

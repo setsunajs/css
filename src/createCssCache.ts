@@ -1,5 +1,3 @@
-import { isPlainObject } from "@setsunajs/shared"
-
 let cache: CSSCache | null = null
 let prefix = "css-"
 let version = "1"
@@ -30,13 +28,21 @@ export type InsertOptions = {
   value?: string
 }
 
-export function createCache(): CSSCache {
+export type CreateCacheOptions = {
+  prefix?: string
+}
+
+export function createCache(options?: CreateCacheOptions): CSSCache {
   if (cache) {
     return cache
   }
 
+  if (options?.prefix) {
+    prefix = options.prefix
+  }
+
   const id = `${prefix}setsuna-${version}`
-  const atomStyle = createStyle(id, "")
+  const atomStyle = createStyle("")
 
   const atomMap: AtomMap = new Map()
   const styleMap: StyleMap = new Map()
@@ -68,7 +74,7 @@ export function createCache(): CSSCache {
           if (style) {
             style.el.textContent = value!
           } else {
-            const el = createStyle(id, value!)
+            const el = createStyle(value!)
             styleMap.set(sKey!, { el })
           }
           return
@@ -84,14 +90,14 @@ export function createCache(): CSSCache {
     })
   }
 
-  return { id, insert }
+  return (cache = { id, insert })
 }
 
-function createStyle(id: string, content: string) {
+function createStyle(content: string) {
   const style = document.createElement("style")
-  style.id = id
   style.type = "text/css"
   style.textContent = content
+  style.setAttribute(`${prefix}setsuna-${version}`, "")
   document.head.appendChild(style)
   return style
 }
@@ -99,4 +105,3 @@ function createStyle(id: string, content: string) {
 export function resolveCache() {
   return cache!
 }
-

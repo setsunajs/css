@@ -17,14 +17,13 @@ export function acss(...props: CSSObject[]) {
       children.push({
         className: sKey,
         sKey,
-        key,
+        key: humpToTransverse(key.trim()),
         value
       })
     })
   })
   return {
-    className: () => children.map(v => v.className),
-    toString: () => children,
+    toString: () => children.map(v => v.className),
     insert: () =>
       children.forEach(({ sKey, key, value }) => {
         const cache = resolveCache()
