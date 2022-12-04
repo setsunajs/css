@@ -9,14 +9,3 @@ export interface CSSProperties
 export type CSSObject = CSSProperties | {
   [key: string]: CSSObject
 }
-
-
-const style: CSSObject = {
-  color: "red",
-  ".title": {
-    color: "red",
-    ".a": {
-      color: "red"
-    }
-  }
-}
