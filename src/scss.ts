@@ -35,7 +35,7 @@ export function scss(...props: Array<CSSObject | SCSSObject>): SCSSObject {
     toSelfString: () => `.${className}{${selfStr}}`,
     insert: () => {
       const cache = resolveCache()
-      children.forEach(value => cache.insert(2, { sKey: `.${prefix}${className}`, value }))
+      children.forEach(value => cache.insert(2, { sKey: `.${className}`, value }))
     }
   }
 }
