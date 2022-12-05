@@ -4,7 +4,8 @@ let version = "1"
 
 export type CSSCache = {
   id: string
-  insert: (type: number, params: InsertOptions) => any
+  insert: (type: number, options: InsertOptions) => any
+  remove: (type: number, options: RemoveOptions) => any
 }
 
 export type AtomMap = Map<
@@ -19,6 +20,7 @@ export type StyleMap = Map<
   string,
   {
     el: HTMLElement
+    ref: number
   }
 >
 
@@ -26,6 +28,10 @@ export type InsertOptions = {
   sKey?: string
   key?: string
   value?: string
+}
+
+export type RemoveOptions = {
+  sKey: string
 }
 
 export type CreateCacheOptions = {
@@ -47,20 +53,19 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
   const atomMap: AtomMap = new Map()
   const styleMap: StyleMap = new Map()
 
-  let pending = true
-  const pendingMap = new Set<InsertOptions & { type: number }>()
+  let insertPending = true
+  const insertPendingSet = new Set<InsertOptions & { type: number }>()
+
   const insert = (type: number, options: InsertOptions) => {
-    pendingMap.add({ ...options, type })
+    insertPendingSet.add({ ...options, type })
 
-    if (!pending) {
-      return
-    }
+    if (!insertPending) return
 
-    pending = false
+    insertPending = false
     Promise.resolve().then(() => {
       let atomStyleContent = atomStyle.textContent
       const atomStyleSize = atomStyleContent!.length
-      pendingMap.forEach(({ type, sKey, key, value }) => {
+      insertPendingSet.forEach(({ type, sKey, key, value }) => {
         if (type === 1) {
           if (atomMap.has(sKey!)) return
 
@@ -71,12 +76,9 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
 
         if (type === 2) {
           const style = styleMap.get(sKey!)
-          if (style) {
-            style.el.textContent = value!
-          } else {
-            const el = createStyle(value!)
-            styleMap.set(sKey!, { el })
-          }
+          style
+            ? (style.ref += 1)
+            : styleMap.set(sKey!, { el: createStyle(value!), ref: 1 })
           return
         }
       })
@@ -85,12 +87,40 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
         atomStyle.textContent = atomStyleContent
       }
 
-      pendingMap.clear()
-      pending = true
+      insertPendingSet.clear()
+      insertPending = true
     })
   }
 
-  return (cache = { id, insert })
+  let removePending = false
+  const removePendingSet = new Set<RemoveOptions & { type: number }>()
+  const remove = (type: number, options: RemoveOptions) => {
+    removePendingSet.add({ type, ...options })
+
+    if (removePending) return
+
+    removePending = true
+    Promise.resolve().then(() => {
+      removePendingSet.forEach(({ type, sKey }) => {
+        if (type === 2) {
+          const style = styleMap.get(sKey)!
+          style.ref -= 1
+
+          if (style.ref === 0) {
+            document.head.removeChild(style.el)
+            styleMap.delete(sKey)
+          }
+
+          return
+        }
+      })
+
+      removePending = false
+      removePendingSet.clear()
+    })
+  }
+
+  return (cache = { id, insert, remove })
 }
 
 function createStyle(content: string) {
@@ -105,4 +135,8 @@ function createStyle(content: string) {
 export function resolveCache() {
   if (!cache) createCache()
   return cache!
+}
+
+export function resolvePrefix() {
+  return prefix
 }

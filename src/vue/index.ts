@@ -1,7 +1,8 @@
-import { Directive, watch } from "vue"
+import { Directive, isReactive, isRef, unref, watch } from "vue"
 import { CSSObject } from "../css"
 import { acss } from "../acss"
 import { scss, SCSSObject } from "../scss"
+import { removeCss } from "../removeCss"
 
 export * from "../acss"
 export * from "../scss"
@@ -33,7 +34,13 @@ function setStyle({ factory, el, preClassNames, value }: Options) {
     if (index > -1) preClassNames[index] = ""
   })
 
-  preClassNames.forEach(css => css && el.classList.remove(css))
+  preClassNames.forEach(css => {console.log( css, "r" )
+    if (css) {
+      el.classList.remove(css.slice(1))
+      removeCss(2, css)
+    }
+  })
+
   return classNames
 }
 
@@ -41,9 +48,9 @@ export const vAtom: Directive<HTMLElement, CSSObject | Array<CSSObject>> = {
   mounted(el, { value }) {
     let preClassNames: string[] = []
 
-    preClassNames = setStyle({ factory: acss, el, preClassNames, value })
+    preClassNames = setStyle({ factory: acss, el, preClassNames, value: unref(value) })
 
-    watch(value, value => {
+    watchChange(value, value => {
       preClassNames = setStyle({ factory: acss, el, preClassNames, value })
     })
   }
@@ -58,8 +65,14 @@ export const vCss: Directive<
 
     preClassNames = setStyle({ factory: scss, el, preClassNames, value })
 
-    watch(value, value => {
+    watchChange(value, value => {
       preClassNames = setStyle({ factory: scss, el, preClassNames, value })
     })
+  }
+}
+
+function watchChange(value: any, callback: (value: any) => any) {
+  if (isRef(value) || isReactive(value)) {
+    watch(value, callback)
   }
 }

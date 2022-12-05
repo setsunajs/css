@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom"
 import { acss } from "src/acss"
-import { createCache, resolveCache } from "src/createCssCache"
+import { createCache, resolveCache, resolvePrefix } from "src/createCssCache"
 import { scss } from "src/scss"
 
 describe("acss", () => {
@@ -37,18 +37,6 @@ describe("scss", () => {
         }
       }).toString().length
     ).toBe(2)
-
-    const s1 = scss({ background: "red" })
-    const s2 = scss({ color: "red" })
-    const s3 = scss({
-      color: "orange",
-      ".title": {
-        fontSize: "12px"
-      },
-      [s1.toString()[0]]: {
-        color: "pink"
-      }
-    })
   })
 
   it("deep scss", () => {
@@ -59,9 +47,10 @@ describe("scss", () => {
         color: "pink"
       }
     })
+    const prefix = resolvePrefix()
     expect(s2.toStyleString()).toEqual([
-      ".7kmldq{color:orange;}",
-      ".7kmldq .1443u2l{color:pink;}"
+      `.${prefix}7kmldq{color:orange;}`,
+      `.${prefix}7kmldq .${prefix}1443u2l{color:pink;}`
     ])
   })
 
@@ -73,7 +62,7 @@ describe("scss", () => {
         color: "pink"
       }
     })
-    expect(s2.toSelfString()).toBe(".7kmldq{color:orange;}")
+    expect(s2.toSelfString()).toBe(`.${resolvePrefix()}7kmldq{color:orange;}`)
   })
 
   it("scss insert", async () => {
@@ -82,6 +71,6 @@ describe("scss", () => {
 
     expect(document.querySelectorAll(`[${resolveCache().id}]`).length).toBe(1)
     await Promise.resolve(1)
-    expect(document.querySelectorAll(`[${resolveCache().id}]`)[1].textContent).toBe(".tokvmb{color:red;}")
+    expect(document.querySelectorAll(`[${resolveCache().id}]`)[1].textContent).toBe(`.${resolvePrefix()}tokvmb{color:red;}`)
   })
 })

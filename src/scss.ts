@@ -1,5 +1,5 @@
 import { humpToTransverse, isPlainObject, isString } from "@setsunajs/shared"
-import { InsertOptions, resolveCache } from "./createCssCache"
+import { InsertOptions, resolveCache, resolvePrefix } from "./createCssCache"
 import { CSSObject } from "./css"
 import hash from "@emotion/hash"
 import { COMMENT, compile, DECLARATION, RULESET } from "stylis"
@@ -22,19 +22,20 @@ export function scss(...props: Array<CSSObject | SCSSObject>): SCSSObject {
     selfStr += _selfStr
   })
 
-  const className = "." + hash(selfStr)
+  const prefix = resolvePrefix()
+  const className = prefix + hash(selfStr)
   const children: string[] = serialize(
     compile((styleStr = `${className}{${styleStr}}`)),
     stringify
-  )
+  ).map(css => "." + css)
   return {
     __setsuna_css_: true,
     toString: () => children.map(item => item.slice(0, item.indexOf("{"))),
     toStyleString: () => children,
-    toSelfString: () => `${className}{${selfStr}}`,
+    toSelfString: () => `.${className}{${selfStr}}`,
     insert: () => {
       const cache = resolveCache()
-      children.forEach(value => cache.insert(2, { value }))
+      children.forEach(value => cache.insert(2, { sKey: `.${prefix}${className}`, value }))
     }
   }
 }
