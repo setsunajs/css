@@ -71,6 +71,8 @@ describe("scss", () => {
 
     expect(document.querySelectorAll(`[${resolveCache().id}]`).length).toBe(1)
     await Promise.resolve(1)
-    expect(document.querySelectorAll(`[${resolveCache().id}]`)[1].textContent).toBe(`.${resolvePrefix()}tokvmb{color:red;}`)
+    expect(
+      document.querySelectorAll(`[${resolveCache().id}]`)[1].textContent
+    ).toBe(`.${resolvePrefix()}tokvmb{color:red;}`)
   })
 })

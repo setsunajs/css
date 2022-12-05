@@ -29,6 +29,14 @@
     }
   },
   "include": [
-    "src/**/*.ts"
-  ]
+    "src"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.react.json"
+    },
+    {
+      "path": "./tsconfig.setsunajs.json"
+    }
+  ],
 }

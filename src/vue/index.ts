@@ -1,5 +1,4 @@
 import {
-  computed,
   createBlock,
   DefineComponent,
   defineComponent,
@@ -75,7 +74,13 @@ export const vAtom: Directive<HTMLElement, CSSObject | Array<CSSObject>> = {
     })
 
     watchChange(value, value => {
-      preClassNames = setStyle({ type: 1, factory: acss, el, preClassNames, value })
+      preClassNames = setStyle({
+        type: 1,
+        factory: acss,
+        el,
+        preClassNames,
+        value
+      })
     })
   }
 }
@@ -96,7 +101,13 @@ export const vCss: Directive<
     })
 
     watchChange(value, value => {
-      preClassNames = setStyle({ type: 2, factory: scss, el, preClassNames, value })
+      preClassNames = setStyle({
+        type: 2,
+        factory: scss,
+        el,
+        preClassNames,
+        value
+      })
     })
   }
 }

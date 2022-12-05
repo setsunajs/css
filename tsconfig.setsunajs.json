@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsxFactory": "jsx",
+    "jsxFragmentFactory": "Fragment"
+  },
+  "include": [
+    "src/setsunajs/**/*.ts",
+    "src/setsunajs/**/*.tsx"
+  ]
+}
