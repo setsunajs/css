@@ -1,10 +1,12 @@
+import { query, queryAll } from "@setsunajs/shared"
 import "@testing-library/jest-dom"
 import { acss } from "src/acss"
 import { createCache, resolveCache, resolvePrefix } from "src/createCssCache"
 import { scss } from "src/scss"
+import hash from "@emotion/hash"
 
 describe("acss", () => {
-  it("acss-className", () => {
+  it("className", () => {
     expect(
       acss({
         color: "red",
@@ -12,67 +14,121 @@ describe("acss", () => {
         ".title": {
           fontSize: "14px"
         }
-      }).toString()
-    ).toEqual([".color-red", ".font-size-12px"])
+      }).className
+    ).toEqual(["color-red", "font-size-12px"])
   })
 
-  it("style-insert", async () => {
+  it("style content", () => {
+    expect(
+      acss({
+        color: "red",
+        fontSize: "12px",
+        ".title": {
+          fontSize: "14px"
+        }
+      }).toStyleString()
+    ).toEqual([".color-red{color:red;}", ".font-size-12px{font-size:12px;}"])
+  })
+
+  it("multiple-content", () => {
+    expect(
+      acss({ color: "red" }, { fontSize: "12px" }).toStyleString()
+    ).toEqual([".color-red{color:red;}", ".font-size-12px{font-size:12px;}"])
+  })
+
+  it("insert(one and multiple)", async () => {
     createCache()
     acss({ color: "red", fontSize: "12px" }).insert()
     acss({ color: "orange", fontSize: "12px" }).insert()
-    await Promise.resolve(1)
-    expect(document.querySelector(`[${resolveCache().id}]`)!.textContent).toBe(
+    acss({ color: "red" }, { fontSize: "12px" }).insert()
+
+    await Promise.resolve()
+
+    const els = queryAll(`[${resolveCache().id}]`)!
+    expect(els.length).toBe(1)
+    expect(els[0].parentElement).toBe(document.head)
+    expect(els[0].textContent).toBe(
       ".color-red{color:red;}.font-size-12px{font-size:12px;}.color-orange{color:orange;}"
     )
+    document.head.removeChild(els[0])
   })
 })
 
 describe("scss", () => {
-  it("scss-className", () => {
-    expect(
-      scss({
-        color: "orange",
-        ".title": {
-          fontSize: "12px"
-        }
-      }).toString().length
-    ).toBe(2)
+  const test = (rule: string, content: string) => {
+    return new RegExp(`^\.[^{]+\{${rule}\}$`).test(content)
+  }
+
+  it("className", () => {
+    expect(scss({ color: "red" }).className).toBe(
+      `${resolvePrefix()}${hash(`color:red;`)}`
+    )
   })
 
-  it("deep scss", () => {
-    const s1 = scss({ background: "red" })
-    const s2 = scss({
-      color: "orange",
-      [s1.toString()[0]]: {
-        color: "pink"
+  it("style content", () => {
+    const [s1, s2] = scss({
+      color: "red",
+      fontSize: "12px",
+      ".title": {
+        fontSize: "14px"
       }
-    })
-    const prefix = resolvePrefix()
-    expect(s2.toStyleString()).toEqual([
-      `.${prefix}7kmldq{color:orange;}`,
-      `.${prefix}7kmldq .${prefix}1443u2l{color:pink;}`
-    ])
+    }).toStyleString()
+
+    expect(test("color:red;font-size:12px;", s1)).toBeTruthy()
+    expect(test("font-size:14px;", s2)).toBeTruthy()
   })
 
-  it("scss self style", () => {
-    const s1 = scss({ background: "red" })
-    const s2 = scss({
-      color: "orange",
-      [s1.toString()[0]]: {
-        color: "pink"
-      }
-    })
-    expect(s2.toSelfString()).toBe(`.${resolvePrefix()}7kmldq{color:orange;}`)
-  })
-
-  it("scss insert", async () => {
+  it("insert", async () => {
     createCache()
     scss({ color: "red" }).insert()
 
-    expect(document.querySelectorAll(`[${resolveCache().id}]`).length).toBe(1)
     await Promise.resolve(1)
-    expect(
-      document.querySelectorAll(`[${resolveCache().id}]`)[1].textContent
-    ).toBe(`.${resolvePrefix()}tokvmb{color:red;}`)
+
+    const el = query(`[${resolveCache().id}]`)!
+    expect(el.parentElement).toBe(document.head)
+    expect(test("color:red;", el.textContent!)).toBeTruthy()
+    document.head.removeChild(el)
+  })
+
+  it("nest scss", () => {
+    const css1 = scss({ background: "red" })
+    const css2 = scss({
+      [css1.className]: {
+        color: "pink"
+      },
+      color: "orange"
+    })
+
+    const [s1, s2] = css2.toStyleString()
+
+    expect(test("color:orange;", s1)).toBeTruthy()
+    expect(test("color:pink;", s2)).toBeTruthy()
+  })
+
+  it("multiple-content", () => {
+    const css1 = scss({ background: "red", ".title": { color: "red" } })
+    const css2 = scss({ fontWeight: "bold" })
+    const css3 = scss(css1, { fontSize: "12px" }, css2)
+    const [s1, s2] = css3.toStyleString()
+
+    expect(test("background:red;font-size:12px;font-weight:bold;", s1)).toBeTruthy()
+    expect(test("color:red;", s2)).toBeTruthy()
+  })
+
+  it("multiple-insert", async () => {
+    const css1 = scss({ background: "red", ".title": { color: "red" } })
+    const css2 = scss({ fontWeight: "bold" })
+    scss(css1, { fontSize: "12px" }, css2).insert()
+
+    await Promise.resolve(1)
+
+    const els = queryAll(`[${resolveCache().id}]`)!
+    expect(els.length).toBe(2)
+
+    expect(test("background:red;font-size:12px;font-weight:bold;", els[0].textContent!)).toBeTruthy()
+    document.head.removeChild(els[0])
+
+    expect(test("color:red;", els[1].textContent!)).toBeTruthy()
+    document.head.removeChild(els[1])
   })
 })

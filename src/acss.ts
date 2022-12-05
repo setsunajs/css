@@ -9,25 +9,26 @@ export function acss(...props: CSSObject[]) {
     if (!isPlainObject(styles)) {
       return
     }
+
     Object.keys(styles).forEach(key => {
       const value: string = styles[key]
       if (!isString(value)) return
 
-      const sKey = "." + humpToTransverse(key.trim()) + "-" + value
-      children.push({
-        className: sKey,
-        sKey,
-        key: humpToTransverse(key.trim()),
-        value
-      })
+      const _key = humpToTransverse(key.trim())
+      const className = _key + "-" + value
+      children.push({ className, value: `.${className}{${_key}:${value};}` })
     })
   })
+
   return {
-    toString: () => children.map(v => v.className),
-    insert: () =>
-      children.forEach(({ sKey, key, value }) => {
-        const cache = resolveCache()
-        cache.insert(1, { sKey, key, value })
-      })
+    get className() {
+      return children.map(child => child.className)
+    },
+    toStyleString: () => {
+      return children.map(child => child.value)
+    },
+    insert: () => {
+      return children.forEach(child => resolveCache().insert(1, child))
+    }
   }
 }

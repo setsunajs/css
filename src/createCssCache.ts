@@ -11,7 +11,6 @@ export type CSSCache = {
 export type AtomMap = Map<
   string,
   {
-    key: string
     value: string
   }
 >
@@ -25,9 +24,8 @@ export type StyleMap = Map<
 >
 
 export type InsertOptions = {
-  sKey?: string
-  key?: string
-  value?: string
+  className: string
+  value: string
 }
 
 export type RemoveOptions = {
@@ -65,20 +63,21 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
     Promise.resolve().then(() => {
       let atomStyleContent = atomStyle.textContent
       const atomStyleSize = atomStyleContent!.length
-      insertPendingSet.forEach(({ type, sKey, key, value }) => {
-        if (type === 1) {
-          if (atomMap.has(sKey!)) return
 
-          atomStyleContent += `${sKey}{${key!}:${value};}`
-          atomMap.set(sKey!, { key: key!, value: value! })
+      insertPendingSet.forEach(({ type, className, value }) => {
+        if (type === 1) {
+          if (atomMap.has(className)) return
+
+          atomStyleContent += value
+          atomMap.set(className, { value })
           return
         }
 
         if (type === 2) {
-          const style = styleMap.get(sKey!)
+          const style = styleMap.get(className)
           style
             ? (style.ref += 1)
-            : styleMap.set(sKey!, { el: createStyle(value!), ref: 1 })
+            : styleMap.set(className, { el: createStyle(value), ref: 1 })
           return
         }
       })
@@ -107,12 +106,10 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
           if (!style) return
 
           style.ref -= 1
-
           if (style.ref === 0) {
             document.head.removeChild(style.el)
             styleMap.delete(sKey)
           }
-
           return
         }
       })

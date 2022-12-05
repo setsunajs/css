@@ -6,63 +6,58 @@ import { COMMENT, compile, DECLARATION, RULESET } from "stylis"
 
 export type SCSSObject = {
   __setsuna_css_: true
-  toString: () => string[]
-  toStyleString: () => string[]
+  className: string
   toSelfString: () => string
+  toStyleString: () => string[]
   insert: () => void
 }
 
 export function scss(...props: Array<CSSObject | SCSSObject>): SCSSObject {
   let styleStr = ""
-  let selfStr = ""
+  props.forEach(style => (styleStr += flatStyle(style)))
 
-  props.forEach(style => {
-    const [_styleStr, _selfStr] = flatStyle(style)
-    styleStr += _styleStr
-    selfStr += _selfStr
-  })
-
-  const prefix = resolvePrefix()
-  const className = prefix + hash(selfStr)
+  const className =
+    resolvePrefix() + hash(styleStr || performance.now().toString())
   const children: string[] = serialize(
-    compile((styleStr = `${className}{${styleStr}}`)),
+    compile(`.${className}{${styleStr}}`),
     stringify
-  ).map(css => "." + css)
+  )
+
   return {
     __setsuna_css_: true,
-    toString: () => children.map(item => item.slice(0, item.indexOf("{"))),
+    get className() {
+      return className
+    },
+    toSelfString: () => styleStr,
     toStyleString: () => children,
-    toSelfString: () => `.${className}{${selfStr}}`,
     insert: () => {
       const cache = resolveCache()
-      children.forEach(value => cache.insert(2, { sKey: `.${className}`, value }))
+      children.forEach(value => {
+        cache.insert(2, { className: value.slice(0, value.indexOf("{")), value })
+      })
     }
   }
 }
 
 function flatStyle(style: CSSObject | SCSSObject) {
-  if (typeof style !== "object") {
-    return ["", ""]
-  }
+  if (!isPlainObject(style)) return [""]
 
   if ("__setsuna_css_" in style) {
-    return [(style as SCSSObject).toSelfString(), ""]
+    return (style as SCSSObject).toSelfString()
   }
 
-  let str = ""
-  let selfStr = ""
+  let styleStr = ""
   Object.keys(style).forEach(_key => {
-    const key = _key.trim()
-    const value = (style as any)[key]
-    if (isString(value) && !key.startsWith("@")) {
-      const _str = `${humpToTransverse(key)}:${value};`
-      str += _str
-      selfStr += _str
+    const key = humpToTransverse(_key.trim())
+    const value = (style as any)[_key]
+    if (!key.startsWith("@") && isString(value)) {
+      styleStr += `${key}:${value};`
     } else if (isPlainObject(value)) {
-      str += `${humpToTransverse(key)}{${flatStyle(value)[0]}}`
+      styleStr += `${key.startsWith(".") ? key : "." + key}{${flatStyle(value)}}`
     }
   })
-  return [str, selfStr]
+
+  return styleStr
 }
 
 function serialize(children: any, callback: any) {
