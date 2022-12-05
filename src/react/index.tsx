@@ -9,6 +9,7 @@ import { CSSObject } from "../css"
 import { scss, SCSSObject } from "../scss"
 import { removeCss } from "../removeCss"
 import { acss } from "../acss"
+import { htmlTags, svgTags } from "@setsunajs/shared"
 
 export * from "../acss"
 export * from "../scss"
@@ -50,24 +51,30 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
 }
 
 type ElementNames = keyof JSX.IntrinsicElements
+type Props<T extends ElementNames> = {
+  is?: T
+  css?: CSSObject | SCSSObject | Array<CSSObject>
+  atom?: CSSObject | Array<CSSObject>
+  children?: ReactNode
+} & JSX.IntrinsicElements[T]
 export type StyledComponent = {
-  <T extends ElementNames>(
+  <T extends ElementNames>(props: Props<T>): ReactElement
+  [k: string]: any
+} & {
+  [T in ElementNames]: (
     props: {
-      is?: T
       css?: CSSObject | SCSSObject | Array<CSSObject>
       atom?: CSSObject | Array<CSSObject>
       children?: ReactNode
     } & JSX.IntrinsicElements[T]
-  ): ReactElement
+  ) => ReactElement
 }
 
-export const Styled: StyledComponent = ({
-  is = "div",
-  css,
-  atom,
-  children,
-  ...props
-}) => {
+export const Styled: StyledComponent = function (
+  this: { tag: ElementNames },
+  { is, css, atom, children, ...props }: Props<ElementNames>
+) {
+  is = is ?? this?.tag ?? "div"
   const preStyleClassNames = useRef<string[]>([])
   const domRef = useRef<HTMLElement | SVGAElement | null>(null)
 
@@ -97,5 +104,16 @@ export const Styled: StyledComponent = ({
     return () => preStyleClassNames.current.forEach(css => removeCss(2, css))
   }, [css])
 
-  return createElement(is, {...props, ref: domRef}, children)
+  return createElement(is, { ...props, ref: domRef } as any, children)
+} as any
+
+{
+  for (const htmlTag of Object.keys(htmlTags)) {
+    const _Styled = Styled.bind({ tag: htmlTag })
+    ;(Styled as any)[htmlTag] = _Styled
+  }
+  for (const svgTag of Object.keys(svgTags)) {
+    const _Styled = Styled.bind({ tag: svgTag })
+    ;(Styled as any)[svgTag] = _Styled
+  }
 }
