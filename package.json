@@ -27,6 +27,10 @@
     "./lib/vue": {
       "default": "./lib/vue/index.js",
       "types": "./lib/vue/index.d.ts"
+    },
+    "./lib/react": {
+      "default": "./lib/react/index.js",
+      "types": "./lib/react/index.d.ts"
     }
   },
   "files": [

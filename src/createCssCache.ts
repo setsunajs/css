@@ -103,7 +103,9 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
     Promise.resolve().then(() => {
       removePendingSet.forEach(({ type, sKey }) => {
         if (type === 2) {
-          const style = styleMap.get(sKey)!
+          const style = styleMap.get(sKey)
+          if (!style) return
+
           style.ref -= 1
 
           if (style.ref === 0) {

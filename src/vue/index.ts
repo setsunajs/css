@@ -51,7 +51,6 @@ function setStyle({ type, factory, el, preClassNames, value }: Options) {
   })
 
   preClassNames.forEach(css => {
-    console.log(css, "r")
     if (css) {
       el.classList.remove(css.slice(1))
       removeCss(type, css)
