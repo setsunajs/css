@@ -31,10 +31,13 @@
     "./lib/react": {
       "default": "./lib/react/index.js",
       "types": "./lib/react/index.d.ts"
-    }
+    },
+    "./lib/*": "./lib",
+    "./normalize.css": "./normalize.css"
   },
   "files": [
-    "lib"
+    "lib",
+    "normalize.css"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
