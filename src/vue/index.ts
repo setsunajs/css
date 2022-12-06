@@ -28,32 +28,27 @@ type Options = {
   factory: any
   preClassNames: string[]
   el: HTMLElement
-  value: CSSObject | SCSSObject | Array<CSSObject>
+  value: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
 }
 
 function setStyle({ type, factory, el, preClassNames, value }: Options) {
-  if (!Array.isArray(value)) {
-    value = [value as any]
-  }
+  if (!Array.isArray(value)) value = [value as any]
 
   const css = factory(...value)
-  const classNames: string[] = css.toString()
-
   css.insert()
 
-  classNames.forEach(css => {
-    if (!el.classList.contains(css)) {
-      el.classList.add(css.slice(1))
+  const classNames: string[] = css.classNames
+  if (!el.classList.contains(classNames[0])) {
+    el.classList.add(classNames[0])
+  }
+
+  preClassNames.forEach(className => {
+    const index = className.indexOf(className)
+    if (index === -1) {
+      removeCss(type, className)
     }
-
-    const index = preClassNames.indexOf(css)
-    if (index > -1) preClassNames[index] = ""
-  })
-
-  preClassNames.forEach(css => {
-    if (css) {
-      el.classList.remove(css.slice(1))
-      removeCss(type, css)
+    if (/^[a-zA-Z]+$/.test(className)) {
+      el.classList.remove(className)
     }
   })
 
@@ -135,35 +130,33 @@ export const Styled = defineComponent({
   setup({ css, atom }) {
     const domRef = ref<null | HTMLElement>(null)
     onMounted(() => {
-      if (atom) {
-        let preClassNames: string[] = []
-
-        preClassNames = setStyle({
+      if (atom && domRef.value) {
+        setStyle({
           type: 1,
           factory: acss,
-          el: domRef.value!,
-          preClassNames,
+          el: domRef.value,
+          preClassNames: [],
           value: unref(atom)
         })
 
         watchChange(atom, value => {
-          preClassNames = setStyle({
+          setStyle({
             type: 1,
             factory: acss,
             el: domRef.value!,
-            preClassNames,
+            preClassNames: [],
             value
           })
         })
       }
 
-      if (css) {
+      if (css && domRef.value) {
         let preClassNames: string[] = []
 
         preClassNames = setStyle({
           type: 2,
           factory: scss,
-          el: domRef.value!,
+          el: domRef.value,
           preClassNames,
           value: unref(css)
         })
@@ -180,7 +173,7 @@ export const Styled = defineComponent({
       }
     })
 
-    // // template: `<component :is="tag" ref="domRef"><slot/></component>`,
+    //template: `<component :is="tag" ref="domRef"><slot/></component>`,
     return (_ctx: any, _cache: any) => {
       return (
         openBlock(),

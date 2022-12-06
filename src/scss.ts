@@ -1,5 +1,5 @@
 import { humpToTransverse, isPlainObject, isString } from "@setsunajs/shared"
-import { InsertOptions, resolveCache, resolvePrefix } from "./createCssCache"
+import { resolveCache, resolvePrefix } from "./createCssCache"
 import { CSSObject } from "./css"
 import hash from "@emotion/hash"
 import { COMMENT, compile, DECLARATION, RULESET } from "stylis"
