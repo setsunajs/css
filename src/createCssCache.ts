@@ -29,7 +29,7 @@ export type InsertOptions = {
 }
 
 export type RemoveOptions = {
-  sKey: string
+  className: string
 }
 
 export type CreateCacheOptions = {
@@ -100,15 +100,15 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
 
     removePending = true
     Promise.resolve().then(() => {
-      removePendingSet.forEach(({ type, sKey }) => {
+      removePendingSet.forEach(({ type, className }) => {
         if (type === 2) {
-          const style = styleMap.get(sKey)
+          const style = styleMap.get(className)
           if (!style) return
 
           style.ref -= 1
           if (style.ref === 0) {
             document.head.removeChild(style.el)
-            styleMap.delete(sKey)
+            styleMap.delete(className)
           }
           return
         }

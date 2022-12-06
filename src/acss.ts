@@ -21,7 +21,7 @@ export function acss(...props: CSSObject[]) {
   })
 
   return {
-    get className() {
+    get classNames() {
       return children.map(child => child.className)
     },
     toStyleString: () => {

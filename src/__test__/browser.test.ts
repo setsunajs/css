@@ -14,7 +14,7 @@ describe("acss", () => {
         ".title": {
           fontSize: "14px"
         }
-      }).className
+      }).classNames
     ).toEqual(["color-red", "font-size-12px"])
   })
 
@@ -60,9 +60,9 @@ describe("scss", () => {
   }
 
   it("className", () => {
-    expect(scss({ color: "red" }).className).toBe(
+    expect(scss({ color: "red" }).className).toEqual([
       `${resolvePrefix()}${hash(`color:red;`)}`
-    )
+    ])
   })
 
   it("style content", () => {
@@ -111,7 +111,9 @@ describe("scss", () => {
     const css3 = scss(css1, { fontSize: "12px" }, css2)
     const [s1, s2] = css3.toStyleString()
 
-    expect(test("background:red;font-size:12px;font-weight:bold;", s1)).toBeTruthy()
+    expect(
+      test("background:red;font-size:12px;font-weight:bold;", s1)
+    ).toBeTruthy()
     expect(test("color:red;", s2)).toBeTruthy()
   })
 
@@ -125,7 +127,12 @@ describe("scss", () => {
     const els = queryAll(`[${resolveCache().id}]`)!
     expect(els.length).toBe(2)
 
-    expect(test("background:red;font-size:12px;font-weight:bold;", els[0].textContent!)).toBeTruthy()
+    expect(
+      test(
+        "background:red;font-size:12px;font-weight:bold;",
+        els[0].textContent!
+      )
+    ).toBeTruthy()
     document.head.removeChild(els[0])
 
     expect(test("color:red;", els[1].textContent!)).toBeTruthy()

@@ -198,6 +198,6 @@ export const Styled = defineComponent({
   }
 }) as DefineComponent<{
   is?: keyof CSSProperties | (string & {})
-  css?: CSSObject | SCSSObject | Array<CSSObject>
+  css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
   atom?: CSSObject | Array<CSSObject>
 }>

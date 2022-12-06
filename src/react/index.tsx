@@ -20,30 +20,27 @@ type Options = {
   factory: any
   preClassNames: string[]
   el: HTMLElement | SVGElement
-  value: CSSObject | SCSSObject | Array<CSSObject>
+  value: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
 }
 
 function setStyle({ type, factory, preClassNames, el, value }: Options) {
   if (!Array.isArray(value)) value = [value as any]
 
   const css = factory(...value)
-  const classNames: string[] = css.toString()
-
   css.insert()
 
-  classNames.forEach(css => {
-    if (!el.classList.contains(css)) {
-      el.classList.add(css.slice(1))
+  const classNames: string[] = css.classNames
+  if (!el.classList.contains(classNames[0])) {
+    el.classList.add(classNames[0])
+  }
+
+  preClassNames.forEach((className) => {
+    const index = className.indexOf(className)
+    if (index === -1) {
+      removeCss(type, className)
     }
-
-    const index = preClassNames.indexOf(css)
-    if (index > -1) preClassNames[index] = ""
-  })
-
-  preClassNames.forEach(css => {
-    if (css) {
-      el.classList.remove(css.slice(1))
-      removeCss(type, css)
+    if (/^[a-zA-Z]+$/.test(className)) {
+      el.classList.remove(className)
     }
   })
 
@@ -53,7 +50,7 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
 type ElementNames = keyof JSX.IntrinsicElements
 type Props<T extends ElementNames> = {
   is?: T
-  css?: CSSObject | SCSSObject | Array<CSSObject>
+  css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
   atom?: CSSObject | Array<CSSObject>
   children?: ReactNode
 } & JSX.IntrinsicElements[T]
@@ -63,7 +60,7 @@ export type StyledComponent = {
 } & {
   [T in ElementNames]: (
     props: {
-      css?: CSSObject | SCSSObject | Array<CSSObject>
+      css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
       atom?: CSSObject | Array<CSSObject>
       children?: ReactNode
     } & JSX.IntrinsicElements[T]

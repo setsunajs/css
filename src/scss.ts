@@ -7,6 +7,7 @@ import { COMMENT, compile, DECLARATION, RULESET } from "stylis"
 export type SCSSObject = {
   __setsuna_css_: true
   className: string
+  classNames: string[]
   toSelfString: () => string
   toStyleString: () => string[]
   insert: () => void
@@ -28,12 +29,20 @@ export function scss(...props: Array<CSSObject | SCSSObject>): SCSSObject {
     get className() {
       return className
     },
+    get classNames() {
+      return children.map(className => {
+        return className.slice(1, className.indexOf("{"))
+      })
+    },
     toSelfString: () => styleStr,
     toStyleString: () => children,
     insert: () => {
       const cache = resolveCache()
       children.forEach(value => {
-        cache.insert(2, { className: value.slice(0, value.indexOf("{")), value })
+        cache.insert(2, {
+          className: value.slice(1, value.indexOf("{")),
+          value
+        })
       })
     }
   }
@@ -53,7 +62,9 @@ function flatStyle(style: CSSObject | SCSSObject) {
     if (!key.startsWith("@") && isString(value)) {
       styleStr += `${key}:${value};`
     } else if (isPlainObject(value)) {
-      styleStr += `${key.startsWith(".") ? key : "." + key}{${flatStyle(value)}}`
+      styleStr += `${key.startsWith(".") ? key : "." + key}{${flatStyle(
+        value
+      )}}`
     }
   })
 
