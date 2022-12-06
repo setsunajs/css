@@ -104,6 +104,8 @@ export const Styled: StyledComponent = function (
   return createElement(is, { ...props, ref: domRef } as any, children)
 } as any
 
+export const C = Styled
+
 {
   for (const htmlTag of Object.keys(htmlTags)) {
     const _Styled = Styled.bind({ tag: htmlTag })
