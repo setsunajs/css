@@ -1,18 +1,11 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "moduleResolution": "node",
     "baseUrl": "./",
-    "types": [
-      "vitest",
-      "vitest/globals",
-      "@types/testing-library__jest-dom"
-    ],
+    "types": ["vitest", "vitest/globals", "@types/testing-library__jest-dom"],
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": true,
@@ -23,14 +16,10 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
-      "src/*": [
-        "./src/*"
-      ]
+      "src/*": ["./src/*"]
     }
   },
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "references": [
     {
       "path": "./tsconfig.react.json"
@@ -38,5 +27,5 @@
     {
       "path": "./tsconfig.setsunajs.json"
     }
-  ],
+  ]
 }

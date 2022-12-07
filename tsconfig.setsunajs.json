@@ -4,8 +4,5 @@
     "jsxFactory": "jsx",
     "jsxFragmentFactory": "Fragment"
   },
-  "include": [
-    "src/setsunajs/**/*.ts",
-    "src/setsunajs/**/*.tsx"
-  ]
+  "include": ["src/setsunajs/**/*.ts", "src/setsunajs/**/*.tsx"]
 }

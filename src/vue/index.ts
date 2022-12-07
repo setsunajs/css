@@ -1,3 +1,4 @@
+import { ACSSObject } from "./../acss"
 import {
   createBlock,
   DefineComponent,
@@ -28,7 +29,7 @@ type Options = {
   factory: any
   preClassNames: string[]
   el: HTMLElement
-  value: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
+  value: ACSSObject | SCSSObject | Array<CSSObject | SCSSObject>
 }
 
 function setStyle({ type, factory, el, preClassNames, value }: Options) {
@@ -55,7 +56,7 @@ function setStyle({ type, factory, el, preClassNames, value }: Options) {
   return classNames
 }
 
-export const vAtom: Directive<HTMLElement, CSSObject | Array<CSSObject>> = {
+export const vAtom: Directive<HTMLElement, ACSSObject | Array<ACSSObject>> = {
   mounted(el, { value }) {
     let preClassNames: string[] = []
 
@@ -192,5 +193,5 @@ export const Styled = defineComponent({
 }) as DefineComponent<{
   is?: keyof CSSProperties | (string & {})
   css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-  atom?: CSSObject | Array<CSSObject>
+  atom?: ACSSObject | Array<ACSSObject>
 }>

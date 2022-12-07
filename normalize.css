@@ -1,10 +1,9 @@
-
 @font-face {
   font-family: Emoji;
-  src: local("Apple Color Emojiji"), local("Segoe UI Emoji"), local("Segoe UI Symbol"), local("Noto Color Emoji");
+  src: local("Apple Color Emojiji"), local("Segoe UI Emoji"),
+    local("Segoe UI Symbol"), local("Noto Color Emoji");
   unicode-range: U+1F000-1F644, U+203C-3299;
 }
-
 
 *,
 ::before,
@@ -26,7 +25,8 @@ html {
 body {
   margin: 0; /* 1 */
   line-height: inherit; /* 2 */
-  font-family: system-ui, —apple-system, Segoe UI, Rototo, Emoji, Helvetica, Arial, sans-serif;
+  font-family: system-ui, —apple-system, Segoe UI, Rototo, Emoji, Helvetica,
+    Arial, sans-serif;
 }
 
 hr {
@@ -112,9 +112,9 @@ select {
 }
 
 button,
-[type='button'],
-[type='reset'],
-[type='submit'] {
+[type="button"],
+[type="reset"],
+[type="submit"] {
   -webkit-appearance: button; /* 1 */
   background-color: transparent; /* 2 */
   background-image: none; /* 2 */
@@ -137,7 +137,7 @@ progress {
   height: auto;
 }
 
-[type='search'] {
+[type="search"] {
   -webkit-appearance: textfield; /* 1 */
   outline-offset: -2px; /* 2 */
 }
@@ -195,7 +195,7 @@ textarea {
 input::placeholder,
 textarea::placeholder {
   opacity: 1; /* 1 */
-  color:  #9ca3af; /* 2 */
+  color: #9ca3af; /* 2 */
 }
 
 button,

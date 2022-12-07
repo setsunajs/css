@@ -8,7 +8,7 @@ import React, {
 import { CSSObject } from "../css"
 import { scss, SCSSObject } from "../scss"
 import { removeCss } from "../removeCss"
-import { acss } from "../acss"
+import { acss, ACSSObject } from "../acss"
 import { htmlTags, svgTags } from "@setsunajs/shared"
 
 export * from "../acss"
@@ -20,7 +20,7 @@ type Options = {
   factory: any
   preClassNames: string[]
   el: HTMLElement | SVGElement
-  value: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
+  value: ACSSObject | SCSSObject | Array<ACSSObject | SCSSObject>
 }
 
 function setStyle({ type, factory, preClassNames, el, value }: Options) {
@@ -34,7 +34,7 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
     el.classList.add(classNames[0])
   }
 
-  preClassNames.forEach((className) => {
+  preClassNames.forEach(className => {
     const index = className.indexOf(className)
     if (index === -1) {
       removeCss(type, className)
@@ -51,7 +51,7 @@ type ElementNames = keyof JSX.IntrinsicElements
 type Props<T extends ElementNames> = {
   is?: T
   css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-  atom?: CSSObject | Array<CSSObject>
+  atom?: ACSSObject | Array<ACSSObject>
   children?: ReactNode
 } & JSX.IntrinsicElements[T]
 export type StyledComponent = {
@@ -61,7 +61,7 @@ export type StyledComponent = {
   [T in ElementNames]: (
     props: {
       css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-      atom?: CSSObject | Array<CSSObject>
+      atom?: ACSSObject | Array<ACSSObject>
       children?: ReactNode
     } & JSX.IntrinsicElements[T]
   ) => ReactElement

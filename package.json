@@ -17,8 +17,6 @@
   "license": "MIT",
   "author": "@顾弦笙/usagisah <1286791152@qq.com>",
   "type": "module",
-  "main": "lib/main.js",
-  "types": "lib/main.d.ts",
   "exports": {
     ".": {
       "default": "./lib/main.js",
@@ -35,15 +33,17 @@
     "./lib/*": "./lib",
     "./normalize.css": "./normalize.css"
   },
+  "main": "lib/main.js",
+  "types": "lib/main.d.ts",
   "files": [
     "lib",
     "normalize.css"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && npm run format",
     "coverage": "vitest run --coverage",
     "dev": "vitest dev",
-    "format": "prettier -w src/**/*.ts",
+    "format": "prettier -w .",
     "release": "node ./scripts/release.js",
     "test": "vitest run"
   },
