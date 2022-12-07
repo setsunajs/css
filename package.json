@@ -1,6 +1,6 @@
 {
   "name": "@setsunajs/css",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Provide a joint solution of \"atom css\" and \"css in js\"",
   "keywords": [
     "@setsunajs",
