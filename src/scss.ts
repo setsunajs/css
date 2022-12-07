@@ -76,7 +76,7 @@ function serialize(children: any, callback: any) {
 
   for (var i = 0; i < children.length; i++) {
     const res = callback(children[i], i, children, callback)
-    if (res) output.push(res)
+    if (res) output.push(res.startsWith("..") ? res.slice(1) : res)
   }
   return output
 }

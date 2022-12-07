@@ -84,10 +84,10 @@ export function acss(...props: ACSSObject[]) {
           }
 
           const _key = humpToTransverse(cKey.trim())
-          const className = _key + "-" + value + "-" + _symbol
+          const className = _key + "-" + translate(cValue) + "-" + _symbol
           children.push({
             className,
-            value: `.${className}:${_symbol}{${_key}:${value};}`
+            value: `.${className}${key}{${_key}:${cValue};}`
           })
         })
         return
@@ -116,11 +116,6 @@ export function acss(...props: ACSSObject[]) {
   }
 }
 
-function parseStyle(
-  style: Record<string, string>,
-  cb: (key: string, value: string) => any
-) {
-  Object.keys(style).forEach(key => {
-    const value = style[key]
-  })
+function translate(key: string) {
+  return key.replace(/([():]+)/, "$1")
 }

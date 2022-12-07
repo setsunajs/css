@@ -23,6 +23,8 @@ type Options = {
   value: ACSSObject | SCSSObject | Array<ACSSObject | SCSSObject>
 }
 
+const classNameOnlyReg = /^(\S+)$/
+
 function setStyle({ type, factory, preClassNames, el, value }: Options) {
   if (!Array.isArray(value)) value = [value as any]
 
@@ -30,17 +32,15 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
   css.insert()
 
   const classNames: string[] = css.classNames
-  if (!el.classList.contains(classNames[0])) {
-    el.classList.add(classNames[0])
-  }
+  classNames.forEach(className => {
+    if (classNameOnlyReg.test(className)) {
+      el.classList.add(className)
+    }
+  })
 
   preClassNames.forEach(className => {
-    const index = className.indexOf(className)
-    if (index === -1) {
+    if (classNameOnlyReg.test(className) && !classNames.includes(className)) {
       removeCss(type, className)
-    }
-    if (/^[a-zA-Z]+$/.test(className)) {
-      el.classList.remove(className)
     }
   })
 
