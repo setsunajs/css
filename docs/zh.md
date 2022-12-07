@@ -47,7 +47,7 @@ import { vAtom } from "@setsunajs/css/lib/vue"
 
 <template>
   <!-- 将会生成 color-red 的类名 -->
-  <div v-atom="{ color: 'red' }">hello</div>
+  <div v-atom="{ color: 'red', ':hover': { color: 'orange' } }">hello</div>
 </template>
 ```
 
@@ -184,7 +184,7 @@ const Home: FC = () => {
   return (
     <>
       <Styled.h1 atom={{ color: "red" }}>aaa</Styled.h1>
-      <Styled is="h1" atom={{ color: "red" }}>
+      <Styled is="h1" atom={{ color: "red", ':hover': { color: "orange" } }}>
         aaa
       </Styled>
     </>
@@ -367,6 +367,13 @@ const css3 = acss({
 const css4 = acss({
   color: "red",
   [css1.className]: {
+    color: "orange"
+  }
+})
+//伪元素
+const css5: acss({
+  color: "red",
+  ":hover": {
     color: "orange"
   }
 })
