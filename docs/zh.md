@@ -184,7 +184,7 @@ const Home: FC = () => {
   return (
     <>
       <Styled.h1 atom={{ color: "red" }}>aaa</Styled.h1>
-      <Styled is="h1" atom={{ color: "red", ':hover': { color: "orange" } }}>
+      <Styled is="h1" atom={{ color: "red", ":hover": { color: "orange" } }}>
         aaa
       </Styled>
     </>

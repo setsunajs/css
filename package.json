@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@emotion/hash": "^0.9.0",
+    "@setsunajs/observable": "^0.2.4",
     "@setsunajs/shared": "^0.2.0",
     "csstype": "^3.1.1",
     "stylis": "^4.1.3",
