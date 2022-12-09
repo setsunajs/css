@@ -1,6 +1,11 @@
-let cache: CSSCache | null = null
+import { query } from "@setsunajs/shared"
+
 let prefix = "css-"
 let version = "1"
+let cache: CSSCache | null = (() => {
+  const atomStyle = query(`#${prefix}setsuna-${version}`)
+  return atomStyle ? (atomStyle as any).cache : null
+})()
 
 export type CSSCache = {
   id: string
@@ -36,13 +41,9 @@ export type CreateCacheOptions = {
   prefix?: string
 }
 
-export function createCache(options?: CreateCacheOptions): CSSCache {
+export function createCache(): CSSCache {
   if (cache) {
     return cache
-  }
-
-  if (options?.prefix) {
-    prefix = options.prefix
   }
 
   const id = `${prefix}setsuna-${version}`
@@ -52,10 +53,9 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
   const styleMap: StyleMap = new Map()
 
   let insertPending = true
-  const insertPendingSet = new Set<InsertOptions & { type: number }>()
-
+  let insertPendingList: Array<InsertOptions & { type: number }> = []
   const insert = (type: number, options: InsertOptions) => {
-    insertPendingSet.add({ ...options, type })
+    insertPendingList.push({ ...options, type })
 
     if (!insertPending) return
 
@@ -64,7 +64,7 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
       let atomStyleContent = atomStyle.textContent
       const atomStyleSize = atomStyleContent!.length
 
-      insertPendingSet.forEach(({ type, className, value }) => {
+      insertPendingList.forEach(({ type, className, value }) => {
         if (type === 1) {
           if (atomMap.has(className)) return
 
@@ -86,8 +86,8 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
         atomStyle.textContent = atomStyleContent
       }
 
-      insertPendingSet.clear()
       insertPending = true
+      insertPendingList = []
     })
   }
 
@@ -119,7 +119,7 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
     })
   }
 
-  return (cache = { id, insert, remove })
+  return (cache = (atomStyle as any).cache = { id, insert, remove })
 }
 
 function createStyle(content: string) {
