@@ -1,9 +1,11 @@
 import React, {
   createElement,
+  forwardRef,
   ReactElement,
   ReactNode,
   useLayoutEffect,
-  useRef
+  useRef,
+  Ref
 } from "react"
 import { CSSObject } from "../css"
 import { scss, SCSSObject } from "../scss"
@@ -78,14 +80,15 @@ export type StyledComponent = {
   ) => ReactElement
 }
 
-export const Styled: StyledComponent = function (
+const _Styled = function (
   this: { tag: ElementNames },
-  { is, css, atom, children, ...props }: Props<ElementNames>
+  { is, css, atom, children, ...props }: Props<ElementNames>,
+  ref: Ref<unknown>
 ) {
   is = is ?? this?.tag ?? "div"
   const preStyleClassNames = useRef<string[]>([])
   const preAtomClassNames = useRef<string[]>([])
-  const domRef = useRef<HTMLElement | SVGAElement | null>(null)
+  const domRef: any = ref ?? useRef(null)
 
   useLayoutEffect(() => {
     if (css && domRef.current) {
@@ -114,17 +117,19 @@ export const Styled: StyledComponent = function (
   }, [atom])
 
   return createElement(is, { ...props, ref: domRef } as any, children)
-} as any
+}
+
+export const Styled: StyledComponent = forwardRef(_Styled) as any
 
 export const C = Styled
 
 {
   for (const htmlTag of Object.keys(htmlTags)) {
-    const _Styled = Styled.bind({ tag: htmlTag })
-    ;(Styled as any)[htmlTag] = _Styled
+    ;(Styled as any)[htmlTag] = forwardRef(
+      _Styled.bind({ tag: htmlTag } as any)
+    )
   }
   for (const svgTag of Object.keys(svgTags)) {
-    const _Styled = Styled.bind({ tag: svgTag })
-    ;(Styled as any)[svgTag] = _Styled
+    ;(Styled as any)[svgTag] = forwardRef(_Styled.bind({ tag: svgTag } as any))
   }
 }

@@ -95,13 +95,16 @@ export type StyledComponent = {
 
 export const Styled: StyledComponent = function (
   this: { tag: ElementNames },
-  { is, css, atom, ...props }: Props<ElementNames>
+  { is, css, atom, ref, ...props }: Props<ElementNames>
 ) {
   let domRef: any = useRef(null)[0]
   is = is ?? this?.tag ?? "div"
 
   useMount(() => {
     domRef = domRef()
+
+    const res = resolveObservableState(ref)
+    res && (res.value = domRef)
   })
 
   useMount(() => {

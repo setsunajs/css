@@ -6,22 +6,21 @@
 
   `atom css` is atomic CSS. You can associate it with `tailwindcss`
 
-  `@setsunajs/css`  no configuration is required, just import the relevant API to use it. The internally created atom will generate a permanent cache to avoid the performance loss caused by the constant destruction and creation of  `css in js'
-  
+  `@setsunajs/css` no configuration is required, just import the relevant API to use it. The internally created atom will generate a permanent cache to avoid the performance loss caused by the constant destruction and creation of `css in js'
+
   It's a balance between good performance and ease of use
-  
- - a 'css in js' runtime that can apply to multiple frameworks
 
-   Considering that if it is purely atomic CSS, it may encounter the problem of insufficient flexibility due to the use of different developers, their usage habits, and improper disassembly, so it provides a similar 'css in js' function as' @ emotion/react'
+- a 'css in js' runtime that can apply to multiple frameworks
 
-   Of course, its volume will be much smaller, which is an optional feature. You can also choose other forms to make up for the lack of flexibility of atomic CSS
+  Considering that if it is purely atomic CSS, it may encounter the problem of insufficient flexibility due to the use of different developers, their usage habits, and improper disassembly, so it provides a similar 'css in js' function as' @ emotion/react'
 
-Currently, the supported frameworks are (` rect ', ` vue'), and the related TS types are complete
+  Of course, its volume will be much smaller, which is an optional feature. You can also choose other forms to make up for the lack of flexibility of atomic CSS
+
+Currently, the supported frameworks are (`rect ',` vue'), and the related TS types are complete
 
 If you want the size advantage of 'tailwindcss' and a more flexible atomic css scheme, you also like the flexibility of' css in js'
 
 Maybe you can try it
-
 
 ## install
 
@@ -45,9 +44,9 @@ import { Styled, C } from "@setsunajs/css/lib/setsunajs"
 
 // using Style Components
 const App = () => {
-	//Is indicates which node should be rendered. The default is div
-	//Atom is used to set the atomic css. It is written in the same style as the inline style and has only one level
-	//Css is used to set the cssInJs style, which is the same as the inline style, but can have nesting and multi-level
+  //Is indicates which node should be rendered. The default is div
+  //Atom is used to set the atomic css. It is written in the same style as the inline style and has only one level
+  //Css is used to set the cssInJs style, which is the same as the inline style, but can have nesting and multi-level
   return () => (
     <Styled is="h1" atom={{ color: "red" }} css={{ color: "orange" }}>
       text...
@@ -92,7 +91,7 @@ const App1 = () => {
 
         //The use of pseudo classes is to use the pseudo class symbol as the key, and then write the nested object style
 
-				//This is the only condition that allows nesting. Special processing will be done internally
+        //This is the only condition that allows nesting. Special processing will be done internally
         ":hover": {
           color: "slateblue"
         }
@@ -315,14 +314,12 @@ import { Styled, C } from "@setsunajs/css/lib/react"
 const Home: FC = () => {
   return (
     <>
-    	//01 display elements can be changed through is. default is div
+      //01 display elements can be changed through is. default is div
       <Styled is="h1">aaa</Styled>
-    
       //02 the short
       <Styled.h1>aaa</Styled.h1>
-    
-    	//03 the short
-    	<C.h1>aaa</C.h1>
+      //03 the short
+      <C.h1>aaa</C.h1>
     </>
   )
 }
@@ -447,11 +444,11 @@ Q & A
 
 - Comparison with 'emotion'
 
-​		Smaller volume
+​ Smaller volume
 
-​		You can use atomic css in js
+​ You can use atomic css in js
 
-​		Easier to use
+​ Easier to use
 
 ## core
 
@@ -467,7 +464,7 @@ Create an atomic css object (it has not been inserted at this time)
 
 The style generation rule is `{color: "red"}==>color red`, that is, flat key values. All illegal references, such as nested styles, will be ignored
 
-Once the style is inserted, it will remain in the dom and cannot be deleted through `removeCss`  This is intentional
+Once the style is inserted, it will remain in the dom and cannot be deleted through `removeCss` This is intentional
 
 The underlying API of all atomic CSS in setsunajs, react, and vue
 
@@ -505,7 +502,7 @@ Styles can be nested, reused, combined and deleted
 
 Styles depend on compilation at run time
 
-The underlying API of all `css in js`  in setsunajs, react, vue
+The underlying API of all `css in js` in setsunajs, react, vue
 
 ```js
 import { acss } from "@setsunajs/css"
