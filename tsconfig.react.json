@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "jsx": "react"
   },
-  "include": ["src/react/**/*.ts", "src/react/**/*.tsx"]
+  "include": ["src/react/**/*.ts", "src/react/**/*.tsx", "src/*.ts"]
 }

@@ -1,4 +1,4 @@
-import { jsx, useRef, useMount } from "setsunajs"
+import { jsx, useRef, useMount, HookState } from "setsunajs"
 import { CSSObject } from "../css"
 import { scss, SCSSObject } from "../scss"
 import { removeCss } from "../removeCss"
@@ -25,42 +25,58 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
   css.insert()
 
   const classNames: string[] = css.classNames
+
+  preClassNames.forEach(className => {
+    if (classNameOnlyReg.test(className) && !classNames.includes(className)) {
+      el.classList.remove(className)
+      removeCss(type, className)
+    }
+  })
+
   classNames.forEach(className => {
     if (classNameOnlyReg.test(className)) {
       el.classList.add(className)
     }
   })
 
-  preClassNames.forEach(className => {
-    if (classNameOnlyReg.test(className) && !classNames.includes(className)) {
-      removeCss(type, className)
-    }
-  })
-
   return classNames
 }
 
+type CSSType =
+  | CSSObject
+  | SCSSObject
+  | Array<CSSObject | SCSSObject>
+  | Observable<CSSObject | SCSSObject | Array<CSSObject | SCSSObject>>
+  | HookState<CSSObject | SCSSObject | Array<CSSObject | SCSSObject>>
+  | Observable<CSSObject | SCSSObject | Array<CSSObject | SCSSObject>>
+type ATOMType =
+  | ACSSObject
+  | Array<ACSSObject>
+  | Observable<ACSSObject | Array<ACSSObject>>
+  | HookState<ACSSObject | Array<ACSSObject>>
+  | Observable<ACSSObject | Array<ACSSObject>>
 type ElementNames = keyof JSX.IntrinsicElements
 type Props<T extends ElementNames> = {
   is?: T
-  css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-  atom?: ACSSObject | Array<ACSSObject>
+  css?: CSSType
+  atom?: ATOMType
 } & JSX.IntrinsicElements[T]
+
 export type StyledComponent = {
   <T extends ElementNames>(props: Props<T>): any
   [k: string]: any
 } & {
   [T in ElementNames]: (
     props: {
-      css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-      atom?: ACSSObject | Array<ACSSObject>
+      css?: CSSType
+      atom?: ATOMType
     } & JSX.IntrinsicElements[T]
   ) => any
 }
 
 export const Styled: StyledComponent = function (
   this: { tag: ElementNames },
-  { is, css, atom, children, ...props }: Props<ElementNames>
+  { is, css, atom, ...props }: Props<ElementNames>
 ) {
   let domRef: any = useRef(null)[0]
   is = is ?? this?.tag ?? "div"
@@ -71,21 +87,22 @@ export const Styled: StyledComponent = function (
 
   useMount(() => {
     if (domRef && atom) {
+      let preClassNames: string[] = []
       const unSubs: Array<{ ob: Observable; unSub: UnObservableSubscribe }> = []
       const value = walkValue(atom, ob => {
         const unSub = ob.subscribe(() => {
-          setStyle({
+          preClassNames = setStyle({
             type: 1,
             factory: acss,
             el: domRef,
             value: walkValue(atom),
-            preClassNames: []
+            preClassNames
           })
         })
         unSubs.push({ unSub, ob })
       })
 
-      setStyle({
+      preClassNames = setStyle({
         type: 1,
         factory: acss,
         preClassNames: [],
@@ -103,7 +120,7 @@ export const Styled: StyledComponent = function (
       const unSubs: Array<{ ob: Observable; unSub: UnObservableSubscribe }> = []
       const value = walkValue(css, ob => {
         const unSub = ob.subscribe(() => {
-          setStyle({
+          preClassNames = setStyle({
             type: 2,
             factory: scss,
             el: domRef,
@@ -129,7 +146,7 @@ export const Styled: StyledComponent = function (
     }
   })
 
-  return jsx(is, { ...props, ref: domRef } as any, jsx("children", {}))
+  return () => jsx(is, { ...props, ref: domRef } as any, jsx("children", {}))
 } as any
 
 export const C = Styled

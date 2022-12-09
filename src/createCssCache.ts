@@ -92,15 +92,15 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
   }
 
   let removePending = false
-  const removePendingSet = new Set<RemoveOptions & { type: number }>()
+  let removePendingList: Array<RemoveOptions & { type: number }> = []
   const remove = (type: number, options: RemoveOptions) => {
-    removePendingSet.add({ type, ...options })
+    removePendingList.push({ type, ...options })
 
     if (removePending) return
 
     removePending = true
     Promise.resolve().then(() => {
-      removePendingSet.forEach(({ type, className }) => {
+      removePendingList.forEach(({ type, className }) => {
         if (type === 2) {
           const style = styleMap.get(className)
           if (!style) return
@@ -115,7 +115,7 @@ export function createCache(options?: CreateCacheOptions): CSSCache {
       })
 
       removePending = false
-      removePendingSet.clear()
+      removePendingList = []
     })
   }
 

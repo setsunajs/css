@@ -30,6 +30,10 @@
       "default": "./lib/react/index.js",
       "types": "./lib/react/index.d.ts"
     },
+    "./lib/setsunajs": {
+      "default": "./lib/setsunajs/index.js",
+      "types": "./lib/setsunajs/index.d.ts"
+    },
     "./lib/*": "./lib",
     "./normalize.css": "./normalize.css"
   },

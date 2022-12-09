@@ -84,10 +84,10 @@ export function acss(...props: ACSSObject[]) {
           }
 
           const _key = humpToTransverse(cKey.trim())
-          const className = _key + "-" + translate(cValue) + "-" + _symbol
+          const className = _key + "-" + transNameValue(cValue) + "-" + _symbol
           children.push({
             className,
-            value: `.${className}${key}{${_key}:${cValue};}`
+            value: `.${transStyleValue(className)}${key}{${_key}:${cValue};}`
           })
         })
         return
@@ -98,8 +98,11 @@ export function acss(...props: ACSSObject[]) {
       }
 
       const _key = humpToTransverse(key.trim())
-      const className = _key + "-" + value
-      children.push({ className, value: `.${className}{${_key}:${value};}` })
+      const className = _key + "-" + transNameValue(value)
+      children.push({
+        className,
+        value: `.${transStyleValue(className)}{${_key}:${value};}`
+      })
     })
   })
 
@@ -116,6 +119,9 @@ export function acss(...props: ACSSObject[]) {
   }
 }
 
-function translate(key: string) {
-  return key.replace(/([():]+)/, "$1")
+function transNameValue(value: string) {
+  return value.replace(/[ ]+/g, "-")
+}
+function transStyleValue(value: string) {
+  return value.replace(/([():.]+)/, "\\$1")
 }
