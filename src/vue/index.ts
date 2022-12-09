@@ -29,8 +29,19 @@ type Options = {
   factory: any
   preClassNames: string[]
   el: HTMLElement
-  value: ACSSObject | SCSSObject | Array<CSSObject | SCSSObject>
+  value: CSSType | ATOMType
 }
+
+type CSSType =
+  | CSSObject
+  | SCSSObject
+  | Record<string, string>
+  | Array<CSSObject | SCSSObject | Record<string, string>>
+
+type ATOMType =
+  | ACSSObject
+  | Record<string, string>
+  | Array<ACSSObject | Record<string, string>>
 
 function setStyle({ type, factory, el, preClassNames, value }: Options) {
   if (!Array.isArray(value)) value = [value as any]
@@ -56,7 +67,7 @@ function setStyle({ type, factory, el, preClassNames, value }: Options) {
   return classNames
 }
 
-export const vAtom: Directive<HTMLElement, ACSSObject | Array<ACSSObject>> = {
+export const vAtom: Directive<HTMLElement, ATOMType> = {
   mounted(el, { value }) {
     let preClassNames: string[] = []
 
@@ -80,10 +91,7 @@ export const vAtom: Directive<HTMLElement, ACSSObject | Array<ACSSObject>> = {
   }
 }
 
-export const vCss: Directive<
-  HTMLElement,
-  CSSObject | SCSSObject | Array<CSSObject>
-> = {
+export const vCss: Directive<HTMLElement, CSSType> = {
   mounted(el, { value }) {
     let preClassNames: string[] = []
 
@@ -120,11 +128,11 @@ export const Styled = defineComponent({
       default: "div"
     },
     css: {
-      type: Object,
+      type: [Object, Array],
       default: () => {}
     },
     atom: {
-      type: Object,
+      type: [Object, Array],
       default: () => {}
     }
   },
@@ -137,7 +145,7 @@ export const Styled = defineComponent({
           factory: acss,
           el: domRef.value,
           preClassNames: [],
-          value: unref(atom)
+          value: unref(atom) as any
         })
 
         watchChange(atom, value => {
@@ -159,7 +167,7 @@ export const Styled = defineComponent({
           factory: scss,
           el: domRef.value,
           preClassNames,
-          value: unref(css)
+          value: unref(css) as any
         })
 
         watchChange(css, value => {
@@ -192,6 +200,6 @@ export const Styled = defineComponent({
   }
 }) as DefineComponent<{
   is?: keyof CSSProperties | (string & {})
-  css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-  atom?: ACSSObject | Array<ACSSObject>
+  css?: CSSType
+  atom?: ATOMType
 }>

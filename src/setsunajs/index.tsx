@@ -45,16 +45,35 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
 type CSSType =
   | CSSObject
   | SCSSObject
-  | Array<CSSObject | SCSSObject>
-  | Observable<CSSObject | SCSSObject | Array<CSSObject | SCSSObject>>
-  | HookState<CSSObject | SCSSObject | Array<CSSObject | SCSSObject>>
-  | Observable<CSSObject | SCSSObject | Array<CSSObject | SCSSObject>>
+  | Record<string, string>
+  | Array<CSSObject | SCSSObject | Record<string, string>>
+  | HookState<
+      | CSSObject
+      | SCSSObject
+      | Record<string, string>
+      | Array<CSSObject | SCSSObject>
+      | Record<string, string>
+    >
+  | Observable<
+      | CSSObject
+      | SCSSObject
+      | Record<string, string>
+      | Array<CSSObject | SCSSObject | Record<string, string>>
+    >
 type ATOMType =
   | ACSSObject
-  | Array<ACSSObject>
-  | Observable<ACSSObject | Array<ACSSObject>>
-  | HookState<ACSSObject | Array<ACSSObject>>
-  | Observable<ACSSObject | Array<ACSSObject>>
+  | Record<string, string>
+  | Array<ACSSObject | Record<string, string>>
+  | HookState<
+      | ACSSObject
+      | Record<string, string>
+      | Array<ACSSObject | Record<string, string>>
+    >
+  | Observable<
+      | ACSSObject
+      | Record<string, string>
+      | Array<ACSSObject | Record<string, string>>
+    >
 type ElementNames = keyof JSX.IntrinsicElements
 type Props<T extends ElementNames> = {
   is?: T

@@ -47,11 +47,20 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
   return classNames
 }
 
+type CSSType =
+  | CSSObject
+  | SCSSObject
+  | Record<string, string>
+  | Array<CSSObject | SCSSObject | Record<string, string>>
+type ATOMType =
+  | ACSSObject
+  | Record<string, string>
+  | Array<ACSSObject | Record<string, string>>
 type ElementNames = keyof JSX.IntrinsicElements
 type Props<T extends ElementNames> = {
   is?: T
-  css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-  atom?: ACSSObject | Array<ACSSObject>
+  css?: CSSType
+  atom?: ATOMType
   children?: ReactNode
 } & JSX.IntrinsicElements[T]
 export type StyledComponent = {
@@ -60,8 +69,8 @@ export type StyledComponent = {
 } & {
   [T in ElementNames]: (
     props: {
-      css?: CSSObject | SCSSObject | Array<CSSObject | SCSSObject>
-      atom?: ACSSObject | Array<ACSSObject>
+      css?: CSSType
+      atom?: ATOMType
       children?: ReactNode
     } & JSX.IntrinsicElements[T]
   ) => ReactElement

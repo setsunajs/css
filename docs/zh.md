@@ -28,9 +28,160 @@ npm i @setsunajs/css
 
 ## 导航
 
+- <a href="#setsuna">适配 `setsuna`</a>
 - <a href="#vue">适配 `vue`</a>
 - <a href="#react">适配 `react`</a>
 - <a href="#core">核心库，可以自定义封装，适配到任意框架</a>
+
+## setsuna
+
+使用时需要样式容器组件作为兜底，它用起来是这样
+
+```jsx
+import { Styled, C } from "@setsunajs/css/lib/setsunajs"
+
+// 使用样式组件
+const App = () => {
+  // is 表示应该渲染出什么节点，默认是 div
+  // atom 用于设置原子 css，它写起来和行内 style 一样，并且只有一级
+  // css 用于设置 cssInJs 样式，它写起来和行内 style 一样，但可以存在嵌套和多级
+  return () => (
+    <Styled is="h1" atom={{ color: "red" }} css={{ color: "orange" }}>
+      这是一段文字...
+    </Styled>
+  )
+}
+
+// 使用简写形式 01, C 是 Styled 组件的别名
+const App1 = () => {
+  return () => (
+    <C is="h1" atom={{ color: "red" }} css={{ color: "orange" }}>
+      这是一段文字...
+    </C>
+  )
+}
+
+// 使用简写形式 02, 样式容器上挂载着不同的标签名，是 is 属性的另一种使用方式
+const App1 = () => {
+  return () => (
+    <div>
+      <Styled.h1> 这是一段文字... </Styled.h1>
+      <C.h2> 这是一段文字... </C.h2>
+    </div>
+  )
+}
+```
+
+创建原子 css 并使用
+
+**使用原子 css 需要依托于，样式容器的 `atom` 属性，它可以接收一个样式对象（对象只能有一级，不能嵌套），或者是样式数组**
+
+**一旦经过使用的原子 css 都会被长久的缓存到全局，不会销毁实际样式，这意味着更好的性能，这是有意为之**
+
+完整的可接收参数请看<a href="acss">core-acss</a>
+
+```jsx
+const App1 = () => {
+  return () => (
+    <C.div
+      atom={{
+        color: "red",
+
+        //伪类的使用是，以伪类的符号作为 key，然后写嵌套对象样式即可
+        //这是唯一允许发生嵌套的条件，内部会做特殊处理
+        ":hover": {
+          color: "slateblue"
+        }
+      }}
+    >
+      这是一段文字
+    </C.div>
+  )
+}
+```
+
+创建 cssInJs 使用
+
+**css in js 的定位是对于原子 css 的补充，也是一个备选方案，建议不要过度依赖**
+
+**它依托于，样式容器的 `css` 属性，它可以接收一个样式对象（对象能有多级，允许嵌套），或者是样式数组**
+
+```jsx
+const App1 = () => {
+  return () => (
+    <C.div
+      atom={{
+        color: "red",
+        "&hover": {
+          color: "slateblue"
+        },
+
+        ".title": {
+          color: "orange"
+        }
+      }}
+    >
+      这是一段文字
+    </C.div>
+  )
+}
+```
+
+结合外部样式
+
+```jsx
+import { scss } from "@setsunajs/css/lib/setsunajs"
+
+const atomStyle1 = { color: "red" }
+const atomStyle2 = { fontSize: "12px" }
+
+const cssStyle1 = { color: "red" }
+const cssStyle2 = scss({ "&:hover": { color: "orange" } })
+
+const App1 = () => {
+  return () => (
+    <C.div atom={[atomStyle1, atomStyle2]} css={[cssStyle1, cssStyle2]}>
+      这是一段文字
+    </C.div>
+  )
+}
+```
+
+创建响应式的样式 & 开发推荐写法
+
++ 创建样式 hook 抽离样式到外侧（如果样式多的话才需要），或者直接写行内原子 css（样式少的时候）
++ 内部根据外部的参数变化来动态调整参数
+
+```jsx
+import { FC, S, useEffect, useState } from 'setsunajs'
+import { C } from '@setsunajs/css/lib/setsunajs'
+
+const useHomeStyle = (num: S<number>) => {
+  const [style, setStyle] = useState({
+    textAlign: "center",
+    color: 'orange'
+  })
+
+  useEffect([num], n => {
+    console.log( n )
+    setStyle({ ...style(), color: n % 2 === 0 ? 'red' : 'orange' })
+  })
+
+  return style
+}
+
+export const Home: FC = () => {
+  const [num, setNum] = useState(0)
+  const add = () => setNum(num() + 1)
+
+  return () => (
+    <C.h1 atom={useHomeStyle(num)}>
+      <p>{num()}</p>
+      <button onClick={add}>++</button>
+    </C.h1>
+  )
+}
+```
 
 ## vue
 
@@ -108,7 +259,7 @@ const cssStyle = reactive({ color: "red" })
 
 结合外部样式
 
-`scss` 会生成自己的样式，具体细节请看 <a href="#scss">color-scss</a>
+`scss` 会生成自己的样式，具体细节请看 <a href="#scss">core-scss</a>
 
 ```vue
 <script setup lang="ts">
@@ -240,7 +391,7 @@ export default Home
 
 引用外部样式
 
-`scss` 会生成自己的样式，具体细节请看 <a href="#scss">color-scss</a>
+`scss` 会生成自己的样式，具体细节请看 <a href="#scss">core-scss</a>，但你可能不太会用得到它
 
 ```tsx
 import { FC, useState } from "react"
@@ -309,7 +460,7 @@ Q & A
 
 样式一旦插入将会一直保留在 dom 中，无法通过 `removeCss` 删除，这是有意为之
 
-react, vue 中所有原子 CSS 的底层 API
+setsunajs, react, vue 中所有原子 CSS 的底层 API
 
 ```js
 import { acss } from "@setsunajs/css"
@@ -345,7 +496,7 @@ css.insert()
 
 样式依赖于运行时的编译
 
-react, vue 中所有 `css in js` 的底层 API
+setsunajs, react, vue 中所有 `css in js` 的底层 API
 
 ```js
 import { acss } from "@setsunajs/css"
