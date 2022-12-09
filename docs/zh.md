@@ -149,22 +149,22 @@ const App1 = () => {
 
 创建响应式的样式 & 开发推荐写法
 
-+ 创建样式 hook 抽离样式到外侧（如果样式多的话才需要），或者直接写行内原子 css（样式少的时候）
-+ 内部根据外部的参数变化来动态调整参数
+- 创建样式 hook 抽离样式到外侧（如果样式多的话才需要），或者直接写行内原子 css（样式少的时候）
+- 内部根据外部的参数变化来动态调整参数
 
 ```jsx
-import { FC, S, useEffect, useState } from 'setsunajs'
-import { C } from '@setsunajs/css/lib/setsunajs'
+import { FC, S, useEffect, useState } from "setsunajs"
+import { C } from "@setsunajs/css/lib/setsunajs"
 
 const useHomeStyle = (num: S<number>) => {
   const [style, setStyle] = useState({
     textAlign: "center",
-    color: 'orange'
+    color: "orange"
   })
 
   useEffect([num], n => {
-    console.log( n )
-    setStyle({ ...style(), color: n % 2 === 0 ? 'red' : 'orange' })
+    console.log(n)
+    setStyle({ ...style(), color: n % 2 === 0 ? "red" : "orange" })
   })
 
   return style

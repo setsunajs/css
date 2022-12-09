@@ -105,35 +105,6 @@ export const Styled: StyledComponent = function (
   })
 
   useMount(() => {
-    if (domRef && atom) {
-      let preClassNames: string[] = []
-      const unSubs: Array<{ ob: Observable; unSub: UnObservableSubscribe }> = []
-      const value = walkValue(atom, ob => {
-        const unSub = ob.subscribe(() => {
-          preClassNames = setStyle({
-            type: 1,
-            factory: acss,
-            el: domRef,
-            value: walkValue(atom),
-            preClassNames
-          })
-        })
-        unSubs.push({ unSub, ob })
-      })
-
-      preClassNames = setStyle({
-        type: 1,
-        factory: acss,
-        preClassNames: [],
-        el: domRef,
-        value
-      })
-
-      return () => unSubs.forEach(({ ob, unSub }) => !ob.closed && unSub())
-    }
-  })
-
-  useMount(() => {
     if (domRef && css) {
       let preClassNames: string[] = []
       const unSubs: Array<{ ob: Observable; unSub: UnObservableSubscribe }> = []
@@ -162,6 +133,35 @@ export const Styled: StyledComponent = function (
         preClassNames.forEach(css => removeCss(2, css))
         unSubs.forEach(({ ob, unSub }) => !ob.closed && unSub())
       }
+    }
+  })
+
+  useMount(() => {
+    if (domRef && atom) {
+      let preClassNames: string[] = []
+      const unSubs: Array<{ ob: Observable; unSub: UnObservableSubscribe }> = []
+      const value = walkValue(atom, ob => {
+        const unSub = ob.subscribe(() => {
+          preClassNames = setStyle({
+            type: 1,
+            factory: acss,
+            el: domRef,
+            value: walkValue(atom),
+            preClassNames
+          })
+        })
+        unSubs.push({ unSub, ob })
+      })
+
+      preClassNames = setStyle({
+        type: 1,
+        factory: acss,
+        preClassNames: [],
+        el: domRef,
+        value
+      })
+
+      return () => unSubs.forEach(({ ob, unSub }) => !ob.closed && unSub())
     }
   })
 

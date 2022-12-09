@@ -43,6 +43,8 @@ type ATOMType =
   | Record<string, string>
   | Array<ACSSObject | Record<string, string>>
 
+const classNameOnlyReg = /^(\S+)$/
+
 function setStyle({ type, factory, el, preClassNames, value }: Options) {
   if (!Array.isArray(value)) value = [value as any]
 
@@ -50,17 +52,17 @@ function setStyle({ type, factory, el, preClassNames, value }: Options) {
   css.insert()
 
   const classNames: string[] = css.classNames
-  if (!el.classList.contains(classNames[0])) {
-    el.classList.add(classNames[0])
-  }
 
   preClassNames.forEach(className => {
-    const index = className.indexOf(className)
-    if (index === -1) {
+    if (classNameOnlyReg.test(className) && !classNames.includes(className)) {
+      el.classList.remove(className)
       removeCss(type, className)
     }
-    if (/^[a-zA-Z]+$/.test(className)) {
-      el.classList.remove(className)
+  })
+
+  classNames.forEach(className => {
+    if (classNameOnlyReg.test(className)) {
+      el.classList.add(className)
     }
   })
 
@@ -139,26 +141,6 @@ export const Styled = defineComponent({
   setup({ css, atom }) {
     const domRef = ref<null | HTMLElement>(null)
     onMounted(() => {
-      if (atom && domRef.value) {
-        setStyle({
-          type: 1,
-          factory: acss,
-          el: domRef.value,
-          preClassNames: [],
-          value: unref(atom) as any
-        })
-
-        watchChange(atom, value => {
-          setStyle({
-            type: 1,
-            factory: acss,
-            el: domRef.value!,
-            preClassNames: [],
-            value
-          })
-        })
-      }
-
       if (css && domRef.value) {
         let preClassNames: string[] = []
 
@@ -176,6 +158,26 @@ export const Styled = defineComponent({
             factory: scss,
             el: domRef.value!,
             preClassNames,
+            value
+          })
+        })
+      }
+
+      if (atom && domRef.value) {
+        setStyle({
+          type: 1,
+          factory: acss,
+          el: domRef.value,
+          preClassNames: [],
+          value: unref(atom) as any
+        })
+
+        watchChange(atom, value => {
+          setStyle({
+            type: 1,
+            factory: acss,
+            el: domRef.value!,
+            preClassNames: [],
             value
           })
         })

@@ -32,15 +32,17 @@ function setStyle({ type, factory, preClassNames, el, value }: Options) {
   css.insert()
 
   const classNames: string[] = css.classNames
-  classNames.forEach(className => {
-    if (classNameOnlyReg.test(className)) {
-      el.classList.add(className)
-    }
-  })
 
   preClassNames.forEach(className => {
     if (classNameOnlyReg.test(className) && !classNames.includes(className)) {
       removeCss(type, className)
+      el.classList.remove(className)
+    }
+  })
+
+  classNames.forEach(className => {
+    if (classNameOnlyReg.test(className)) {
+      el.classList.add(className)
     }
   })
 
@@ -82,19 +84,8 @@ export const Styled: StyledComponent = function (
 ) {
   is = is ?? this?.tag ?? "div"
   const preStyleClassNames = useRef<string[]>([])
+  const preAtomClassNames = useRef<string[]>([])
   const domRef = useRef<HTMLElement | SVGAElement | null>(null)
-
-  useLayoutEffect(() => {
-    if (atom && domRef.current) {
-      setStyle({
-        type: 1,
-        factory: acss,
-        preClassNames: [],
-        el: domRef.current,
-        value: atom
-      })
-    }
-  }, [atom])
 
   useLayoutEffect(() => {
     if (css && domRef.current) {
@@ -109,6 +100,18 @@ export const Styled: StyledComponent = function (
 
     return () => preStyleClassNames.current.forEach(css => removeCss(2, css))
   }, [css])
+
+  useLayoutEffect(() => {
+    if (atom && domRef.current) {
+      preAtomClassNames.current = setStyle({
+        type: 1,
+        factory: acss,
+        preClassNames: preAtomClassNames.current,
+        el: domRef.current,
+        value: atom
+      })
+    }
+  }, [atom])
 
   return createElement(is, { ...props, ref: domRef } as any, children)
 } as any
