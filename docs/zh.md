@@ -78,7 +78,7 @@ const App1 = () => {
 
 **一旦经过使用的原子 css 都会被长久的缓存到全局，不会销毁实际样式，这意味着更好的性能，这是有意为之**
 
-完整的可接收参数请看<a href="acss">core-acss</a>
+完整的可接收参数请看<a href="#acss">core-acss</a>
 
 ```jsx
 const App1 = () => {
