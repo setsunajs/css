@@ -1,6 +1,7 @@
 import { humpToTransverse, isPlainObject, isString } from "@setsunajs/shared"
 import { InsertOptions, resolveCache } from "./createCssCache"
 import { CSSProperties } from "./css"
+import hash from "./hash"
 
 export type PseudoElementTypes =
   | ":active"
@@ -84,10 +85,11 @@ export function acss(...props: ACSSObject[]) {
           }
 
           const _key = humpToTransverse(cKey.trim())
-          const className = _key + "-" + transNameValue(cValue) + "-" + _symbol
+          const className =
+            "a" + hash(_key + "-" + transValue(cValue) + "-") + _symbol
           children.push({
             className,
-            value: `.${transStyleValue(className)}${key}{${_key}:${cValue};}`
+            value: `.${className}${key}{${_key}:${cValue};}`
           })
         })
         return
@@ -98,10 +100,10 @@ export function acss(...props: ACSSObject[]) {
       }
 
       const _key = humpToTransverse(key.trim())
-      const className = _key + "-" + transNameValue(value)
+      const className = "a" + hash(_key + "-" + transValue(value))
       children.push({
         className,
-        value: `.${transStyleValue(className)}{${_key}:${value};}`
+        value: `.${className}{${_key}:${value};}`
       })
     })
   })
@@ -119,9 +121,6 @@ export function acss(...props: ACSSObject[]) {
   }
 }
 
-function transNameValue(value: string) {
-  return value.replace(/[ ]+/g, "-")
-}
-function transStyleValue(value: string) {
-  return value.replace(/([():.]+)/, "\\$1")
+function transValue(value: string) {
+  return value.replace(/\s+/g, " ")
 }

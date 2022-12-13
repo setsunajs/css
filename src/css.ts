@@ -1,5 +1,4 @@
 import * as CSS from "csstype"
-import { SCSSObject } from "./scss"
 
 export interface CSSProperties
   extends CSS.Properties<string | number>,

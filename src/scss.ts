@@ -1,7 +1,7 @@
 import { humpToTransverse, isPlainObject, isString } from "@setsunajs/shared"
 import { resolveCache, resolvePrefix } from "./createCssCache"
 import { CSSObject } from "./css"
-import hash from "@emotion/hash"
+import hash from "./hash"
 import { COMMENT, compile, DECLARATION, RULESET } from "stylis"
 
 export type SCSSObject = {

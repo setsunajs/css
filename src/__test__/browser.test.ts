@@ -2,8 +2,8 @@ import { query, queryAll } from "@setsunajs/shared"
 import "@testing-library/jest-dom"
 import { acss } from "src/acss"
 import { createCache, resolveCache, resolvePrefix } from "src/createCssCache"
+import hash from "src/hash"
 import { scss } from "src/scss"
-import hash from "@emotion/hash"
 
 describe("acss", () => {
   it("className", () => {

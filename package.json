@@ -1,6 +1,6 @@
 {
   "name": "@setsunajs/css",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Provide a joint solution of \"atom css\" and \"css in js\"",
   "keywords": [
     "@setsunajs",
@@ -52,7 +52,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@emotion/hash": "^0.9.0",
     "@setsunajs/observable": "^0.2.4",
     "@setsunajs/shared": "^0.2.0",
     "csstype": "^3.1.1",
